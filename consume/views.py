@@ -4,18 +4,21 @@ from .models import Person
 
 
 class HomeView(TemplateView):
+    """
+    The home page
+    """
     template_name = 'consume/Home.html'
 
-    # def get(self, request, *args, **kwargs):
-    #     data = json.load(urlopen("https://swapi.co/api/people/"))
-    #     print(data)
-    #     return super
-
     def get_context_data(self, **kwargs):
+        """
+        Get people from the api and save them to the database after
+        truncating all data
+        """
         data = super().get_context_data(**kwargs)
 
         Person.objects.all().delete()
 
+        # Person with id of 1
         person_1 = swapi.get_person(1)
 
         Person.objects.create(
@@ -27,14 +30,13 @@ class HomeView(TemplateView):
         )
 
         people = swapi.get_all('people')
-        # print(people)
-        # print(list(people))
         people_with_blue_eyes = []
 
         for person in people.items:
             if person.eye_color == 'blue':
                 people_with_blue_eyes.append(person)
 
+        # People with blue eyes
         for person in people_with_blue_eyes:
             if person.name != person_1.name:
                 Person.objects.create(
